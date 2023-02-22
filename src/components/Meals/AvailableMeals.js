@@ -1,36 +1,40 @@
+import { useState, useEffect } from "react";
+
 import Card from "../UI/Card";
 import classes from "./AvailableMeals.module.css";
 import MealItem from "./MealItem/MealItem";
-
-const DUMMY_MEALS = [
-  {
-    id: "m1",
-    name: "Sushi",
-    description: "Finest fish and veggies",
-    price: 22.99,
-  },
-  {
-    id: "m2",
-    name: "Schnitzel",
-    description: "A german specialty!",
-    price: 16.5,
-  },
-  {
-    id: "m3",
-    name: "Barbecue Burger",
-    description: "American, raw, meaty",
-    price: 12.99,
-  },
-  {
-    id: "m4",
-    name: "Green Bowl",
-    description: "Healthy...and green...",
-    price: 18.99,
-  },
-];
+import useHttp from "../../hooks/use-http";
 
 const AvailableMeals = () => {
-  const mealsList = DUMMY_MEALS.map((meal) => (
+  const [meals, setMeals] = useState([]);
+
+  const transformedData = (data) => {
+    const loadedMeals = [];
+
+    for (const mealKey in data) {
+      loadedMeals.push({
+        id: mealKey,
+        name: data[mealKey].name,
+        description: data[mealKey].description,
+        price: data[mealKey].price,
+      });
+    }
+
+    setMeals(loadedMeals);
+  };
+
+  const [isLoading, error, fetchMeals] = useHttp();
+
+  useEffect(() => {
+    fetchMeals(
+      {
+        url: "https://httptest-6e34c-default-rtdb.europe-west1.firebasedatabase.app/meals.json",
+      },
+      transformedData
+    );
+  }, [fetchMeals]);
+
+  const mealsList = meals.map((meal) => (
     <MealItem
       id={meal.id}
       key={meal.id}
@@ -40,11 +44,25 @@ const AvailableMeals = () => {
     />
   ));
 
+  //Arranged by importance, more important one is below and overrides the one above if true
+  let content = <p>No meals found.</p>;
+
+  if (meals.length > 0) {
+    content = <ul>{mealsList}</ul>;
+  }
+
+  if (error) {
+    content = <p>{error}</p>;
+  }
+
+  //Loading is most important and overrides rest if true
+  if (isLoading) {
+    content = <p>Loading...</p>;
+  }
+
   return (
     <section className={classes.meals}>
-      <Card>
-        <ul>{mealsList}</ul>
-      </Card>
+      <Card>{content}</Card>
     </section>
   );
 };
