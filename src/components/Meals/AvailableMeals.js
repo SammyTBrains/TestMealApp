@@ -9,10 +9,10 @@ const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
 
   const transformedData = (data) => {
-    const myLoadedMeals = [];
+    const loadedMeals = [];
 
     for (const mealKey in data) {
-      myLoadedMeals.push({
+      loadedMeals.push({
         id: mealKey,
         name: data[mealKey].name,
         description: data[mealKey].description,
@@ -20,7 +20,7 @@ const AvailableMeals = () => {
       });
     }
 
-    setMeals(myLoadedMeals);
+    setMeals(loadedMeals);
   };
 
   const [isLoading, error, fetchMeals] = useHttp();
@@ -52,7 +52,7 @@ const AvailableMeals = () => {
   }
 
   if (error) {
-    content = <p>{error}</p>;
+    content = <p className={classes["error-text"]}>{error}</p>;
   }
 
   //Loading is most important and overrides rest if true

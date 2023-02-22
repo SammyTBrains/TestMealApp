@@ -11,6 +11,10 @@
   padding: 0;
 }
 
+.error-text {
+  color: red;
+}
+
 @keyframes meals-appear {
   from {
     opacity: 0;
