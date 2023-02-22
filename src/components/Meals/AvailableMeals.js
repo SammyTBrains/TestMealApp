@@ -9,10 +9,10 @@ const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
 
   const transformedData = (data) => {
-    const loadedMeals = [];
+    const myLoadedMeals = [];
 
     for (const mealKey in data) {
-      loadedMeals.push({
+      myLoadedMeals.push({
         id: mealKey,
         name: data[mealKey].name,
         description: data[mealKey].description,
@@ -20,7 +20,7 @@ const AvailableMeals = () => {
       });
     }
 
-    setMeals(loadedMeals);
+    setMeals(myLoadedMeals);
   };
 
   const [isLoading, error, fetchMeals] = useHttp();
