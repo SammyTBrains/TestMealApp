@@ -5,10 +5,13 @@ import CartItem from "./CartItem";
 import classes from "./Cart.module.css";
 import CartContext from "../../store/cart-context";
 import Checkout from "./Checkout";
+import useHttp from "../../hooks/use-http";
 
 const Cart = (props) => {
   const [isCheckout, setIsCheckout] = useState(false);
   const cartCtx = useContext(CartContext);
+
+  const [isLoading, error, submitOrder] = useHttp();
 
   const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
   const hasItems = cartCtx.items.length > 0;
@@ -23,6 +26,20 @@ const Cart = (props) => {
 
   const orderHandler = () => {
     setIsCheckout(true);
+  };
+
+  const onSubmitOrderHandler = (userData) => {
+    submitOrder(
+      {
+        url: "https://httptest-6e34c-default-rtdb.europe-west1.firebasedatabase.app/orders.json",
+        method: "POST",
+        body: {
+          user: userData,
+          orderedItems: cartCtx.items,
+        },
+      },
+      (data) => {}
+    );
   };
 
   const cartItems = (
@@ -53,6 +70,22 @@ const Cart = (props) => {
     </div>
   );
 
+  let checkoutContent = modalActions;
+
+  if (isCheckout) {
+    checkoutContent = (
+      <Checkout onConfirm={onSubmitOrderHandler} onCancel={props.onHideCart} />
+    );
+  }
+
+  if (error) {
+    checkoutContent = <p className={classes["error-text"]}>{error}</p>;
+  }
+
+  if (isLoading) {
+    checkoutContent = <p>Loading...</p>;
+  }
+
   return (
     <Modal onClose={props.onHideCart}>
       {cartItems}
@@ -60,8 +93,7 @@ const Cart = (props) => {
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
-      {isCheckout && <Checkout onCancel={props.onHideCart} />}
-      {!isCheckout && modalActions}
+      {checkoutContent}
     </Modal>
   );
 };
