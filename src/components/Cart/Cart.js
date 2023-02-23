@@ -9,6 +9,7 @@ import useHttp from "../../hooks/use-http";
 
 const Cart = (props) => {
   const [isCheckout, setIsCheckout] = useState(false);
+  const [postData, setPostData] = useState(null);
   const cartCtx = useContext(CartContext);
 
   const [isLoading, error, submitOrder] = useHttp();
@@ -38,7 +39,7 @@ const Cart = (props) => {
           orderedItems: cartCtx.items,
         },
       },
-      (data) => {}
+      (data) => setPostData(data)
     );
   };
 
@@ -76,6 +77,10 @@ const Cart = (props) => {
     checkoutContent = (
       <Checkout onConfirm={onSubmitOrderHandler} onCancel={props.onHideCart} />
     );
+  }
+
+  if (postData) {
+    checkoutContent = <p>Successful!</p>;
   }
 
   if (error) {
