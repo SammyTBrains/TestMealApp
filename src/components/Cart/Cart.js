@@ -51,7 +51,7 @@ const Cart = (props) => {
           amount={item.amount}
           price={item.price}
           onRemove={cartItemRemoveHandler.bind(null, item.id)}
-          onAdd={cartItemAddHandler.bind(null, item)}
+          onAdd={cartItemAddHandler.bind(null, { ...item, amount: 1 })}
         />
       ))}
     </ul>
